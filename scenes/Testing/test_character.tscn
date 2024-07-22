@@ -1,0 +1,77 @@
+[gd_scene load_steps=5 format=3 uid="uid://dsqa26uxhwm1t"]
+
+[ext_resource type="PackedScene" uid="uid://bvv8qucn6t76b" path="res://scenes/state_machine/state_machine.tscn" id="1_qsh43"]
+[ext_resource type="Script" path="res://scripts/state/Idle.gd" id="2_sn2vh"]
+[ext_resource type="Script" path="res://scripts/state/Move.gd" id="3_geem0"]
+[ext_resource type="Script" path="res://scripts/state/Attack.gd" id="4_j1aaq"]
+
+[node name="TestCharacter" type="Node2D"]
+
+[node name="StateMachine" parent="." node_paths=PackedStringArray("debug_current_state", "debug_previous_state", "debug_transitions") instance=ExtResource("1_qsh43")]
+initial_state = NodePath("Idle")
+debug_current_state = NodePath("../Control/CurrentState")
+debug_previous_state = NodePath("../Control/PreviousState")
+debug_transitions = NodePath("../Control/TransitionsControl/VBoxContainer")
+
+[node name="Idle" type="Node" parent="StateMachine" node_paths=PackedStringArray("state_transitions")]
+script = ExtResource("2_sn2vh")
+state_transitions = [NodePath("../Move"), NodePath("../Attack")]
+
+[node name="Move" type="Node" parent="StateMachine" node_paths=PackedStringArray("state_transitions")]
+script = ExtResource("3_geem0")
+state_transitions = [NodePath("../Attack")]
+
+[node name="Attack" type="Node" parent="StateMachine"]
+script = ExtResource("4_j1aaq")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="CurrentState" type="TextEdit" parent="Control"]
+layout_mode = 0
+offset_left = 448.0
+offset_top = 64.0
+offset_right = 703.0
+offset_bottom = 122.0
+text = "Current State:"
+
+[node name="PreviousState" type="TextEdit" parent="Control"]
+layout_mode = 0
+offset_left = 448.0
+offset_top = 128.0
+offset_right = 703.0
+offset_bottom = 186.0
+text = "Previous State:"
+
+[node name="TransitionsControl" type="Control" parent="Control"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TextEdit2" type="TextEdit" parent="Control/TransitionsControl"]
+layout_mode = 0
+offset_left = 288.0
+offset_top = 256.0
+offset_right = 544.0
+offset_bottom = 288.0
+text = "Upward Transitions"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/TransitionsControl"]
+layout_mode = 0
+offset_left = 288.0
+offset_top = 296.0
+offset_right = 544.0
+offset_bottom = 424.0
+
+[node name="Button" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = 128.0
+offset_top = 64.0
+offset_right = 324.0
+offset_bottom = 120.0
+text = "Return to previous state"
+
+[connection signal="pressed" from="Control/Button" to="StateMachine" method="_on_button_pressed"]
